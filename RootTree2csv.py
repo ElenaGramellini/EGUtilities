@@ -31,64 +31,74 @@ import os
 import datetime
 import argparse
 
-print datetime.datetime.now()
-######################## This is temporary ###############################
-#rootName  = "anaTree_postMassFilter.root"
-#ttreeName = "anatree/anatree"
-#leaves = ["cTOF[0]","wcPx[0]","wcPy[0]","wcPz[0]"]
-######################## This is temporary ###############################
+# Let's have an idea of how much does it take to run this s***t
+print "We start now! ", datetime.datetime.now()
+print
 
-  
+# Parse the input arguments  
 parser = argparse.ArgumentParser()
 parser.add_argument("rootName" , help="This is the name of the rootFile where your TTree leaves")
 parser.add_argument("ttreeName", help="This is the path/name of your TTree")
 parser.add_argument("leaf"     , metavar='N', type=str, nargs='+',
                     help="This is the name of the leaf you want to tabulate. Can be more than 1")
-
-#parser.add_argument('integers', metavar='N', type=int, nargs='+',
-#                    help='an integer for the accumulator')
-
 args = parser.parse_args()
-  
+
+# and make sure they are converted to strings  
 rootName  = str(args.rootName)
 ttreeName = str(args.ttreeName)
-
 leaves = args.leaf
 
-#print rootName, ttreeName, leaves[0]
 
-
-
+# Make sure the file exists
 if not os.path.isfile(rootName):
    exit("Root File Not Found")
-
 fileRoot    = TFile(rootName)
+# Make sure the anatree exists
 ttree   = fileRoot.Get(ttreeName)
 if not ttree:
    exit("AnaTree Not Found")
 
+# Let's give the outputfile a name that rembles the original root file and anatree
 wordsInttreeName = ttreeName.split("/")
 wordsfileRootName = rootName.split(".")
 outPutFileName = wordsfileRootName[0]+wordsInttreeName[len(wordsInttreeName)-1]+"_tree.csv"
-
 target = open(outPutFileName, 'w')
 
+# Print out the header in the csv format, might be useful for R
+header = ""
+for leaf in leaves:
+      header += (leaf+",")
+header = header[:-1]
+print "Your table will be in the format:"
+print header
+target.write(header)
+
+### Bulk of the program ###
+# leafValue is a dummy variable to store the leafValue in the loop
 leafValue = 0
+# Run on all the anatree events
 for event in ttree :
+   # outString is what we're going to write in the csv, one per event 
    outString = ""
+   # Take each leaf in each event
    for leaf in leaves:
+      # command to get the leaf
       pyCmd = 'leafValue = event.'+leaf
+      # but make sure the leaf exists
       try:
          exec(pyCmd)
       except AttributeError: 
          exit("Leaf Not Found")
+      # if the leaf is the last one in the sequence, add a return
       if (leaf==leaves[len(leaves)-1]):
          outString += str(leafValue)+"\n"
+      # otherwise, add a comma
       else:
          outString += str(leafValue)+","
+   # write your string to file
    target.write(outString)
 
-
-
-print datetime.datetime.now()
+print
+print datetime.datetime.now(), ", and this is it!"
+# Done
 

@@ -22,6 +22,7 @@
 *.root
 *.csv
 *.tsv
+*.*~
 # Logs and databases #
 ######################
 *.log
