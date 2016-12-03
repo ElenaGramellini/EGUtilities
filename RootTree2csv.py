@@ -23,8 +23,6 @@ Version 0
 
 Input: name of the root file, name of the ttree, name of the leaves
 Output: a csv file with tabulated values of the leaves
-TO DO:
-[   ] get input attributes
 """   
 
 
@@ -35,21 +33,27 @@ import argparse
 
 print datetime.datetime.now()
 ######################## This is temporary ###############################
-rootName  = "anaTree_postMassFilter.root"
-ttreeName = "anatree/anatree"
-leaves = ["cTOF[0]","wcPx[0]","wcPy[0]","wcPz[0]"]
+#rootName  = "anaTree_postMassFilter.root"
+#ttreeName = "anatree/anatree"
+#leaves = ["cTOF[0]","wcPx[0]","wcPy[0]","wcPz[0]"]
 ######################## This is temporary ###############################
 
   
-#parser = argparse.ArgumentParser()
-#parser.add_argument("rootName" , help="This is the name of the rootFile where your TTree leaves")
-#parser.add_argument("ttreeName", help="This is the path/name of your TTree")
-#parser.add_argument("leaf"     , help="This is the name of the leaf you want to tabulate. Can be more than 1")
-#args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument("rootName" , help="This is the name of the rootFile where your TTree leaves")
+parser.add_argument("ttreeName", help="This is the path/name of your TTree")
+parser.add_argument("leaf"     , metavar='N', type=str, nargs='+',
+                    help="This is the name of the leaf you want to tabulate. Can be more than 1")
+
+#parser.add_argument('integers', metavar='N', type=int, nargs='+',
+#                    help='an integer for the accumulator')
+
+args = parser.parse_args()
   
-#rootName  = str(args.rootName)
-#ttreeName = str(args.ttreeName)
-#leaves = [str(args.leaf)]
+rootName  = str(args.rootName)
+ttreeName = str(args.ttreeName)
+
+leaves = args.leaf
 
 #print rootName, ttreeName, leaves[0]
 
